@@ -1,0 +1,86 @@
+
+Java 13:
+=================
+it is a non-LTS (Long-Term Support) release, Java 13 introduces experimental and preview features that pave the way for future improvements
+
+Experimental and Preview Features
+---------------------------------------
+1. Switch Expressions:
+
+Switch expressions allow the switch statement to be used as an expression, providing a more concise and flexible way to handle multiple cases.
+
+public class SwitchExpressionsExample {
+    public static void main(String[] args) {
+        String day = "MONDAY";
+
+        // Using switch as an expression with yield
+        int result = switch (day) {
+            case "MONDAY", "FRIDAY", "SUNDAY" -> 6;
+            case "TUESDAY" -> 7;
+            case "THURSDAY", "SATURDAY" -> 8;
+            case "WEDNESDAY" -> {
+                int len = day.length();
+                yield len; // Using yield to return a value
+            }
+            default -> throw new IllegalArgumentException("Invalid day: " + day);
+        };
+
+        System.out.println("Result: " + result);
+    }
+}
+
+
+Yield Statement: The yield statement is introduced to return a value from a switch expression block, providing a more explicit way to specify the result.
+
+2. Text Blocks:
+
+Text blocks are introduced as a preview feature in Java 13, providing a new way to define multi-line string literals. This feature simplifies the creation of strings that span multiple lines, making them more readable and less error-prone.
+
+public class TextBlocksExample {
+    public static void main(String[] args) {
+        // Using a text block to define a multi-line string
+        String json = """
+                      {
+                          "name": "Java",
+                          "version": 13,
+                          "features": ["Text Blocks", "Switch Expressions"]
+                      }
+                      """;
+
+        System.out.println("JSON:\n" + json);
+    }
+}
+
+
+Multi-Line Strings: Text blocks use triple quotes (""") to define multi-line string literals, preserving the formatting and indentation of the source code.
+
+
+Performance Improvements
+------------------------------
+
+1. Dynamic CDS Archives:
+
+Class data sharing (CDS) has been a prominent feature of Java HotSpot VM for a while now. It allows class metadata to be shared across different JVMs to reduce startup time and memory footprint. 
+However, the process of archiving application classes was tedious. To generate archive files, developers had to do trial runs of their applications to create a class list first, and then dump it into an archive. After that, this archive could be used to share metadata between JVMs.
+
+With dynamic archiving, JDK 13 has simplified this process. Now we can generate a shared archive at the time the application is exiting. This has eliminated the need for trial runs.
+
+To enable applications to create a dynamic shared archive on top of the default system archive, we need to add an option -XX:ArchiveClassesAtExit and specify the archive name as argument:
+java -XX:ArchiveClassesAtExit=<archive filename> -cp <app jar> AppName
+
+We can then use the newly created archive to run the same app with -XX:SharedArchiveFile option:
+java -XX:SharedArchiveFile=<archive filename> -cp <app jar> AppName
+
+
+2. Reimplement the Legacy Socket API 
+
+Java’s legacy Socket API, which has been part of the language since JDK 1.0, is reimplemented in Java 13 to improve maintainability and simplify the code. The new implementation replaces the underlying native C code with a more modern and easy-to-maintain Java implementation.
+
+3. ZGC: Uncommit Unused Memory
+
+The Z Garbage Collector (ZGC) was introduced in Java 11 as an experimental feature, aiming to provide low-latency garbage collection for large heap sizes (multi-terabyte). ZGC is designed to minimize pauses during garbage collection, making it an attractive option for applications with strict latency requirements. 
+
+Java 13 enhances ZGC by allowing it to return unused heap memory to the operating system. This feature is particularly useful for applications with fluctuating memory requirements, as it can help reduce the overall memory footprint during periods of low activity.
+
+To enable ZGC and the uncommit of unused memory, use the following command-line options: 
+-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -XX:ZUncommitDelay=<seconds>

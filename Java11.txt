@@ -1,0 +1,89 @@
+
+Java Versions:
+=====================
+
+Java 11 
+----------
+
+
+1. Compile free launch : One major change is that you don’t need to compile the java source file with javac tool first. You can directly run the file with java command and it implicitly compiles.
+
+2. Java String Methods:
+
+isBlank() - This instance method returns a boolean value. Empty Strings and Strings with only white spaces are treated as blank.
+
+lines() - This method returns a stream of strings, which is a collection of all substrings split by lines.
+
+strip(), stripLeading(), stripTrailing() strip() - Removes the white space from both, beginning and the end of string.
+
+But we already have trim(). Then what’s the need of strip()? strip() is “Unicode-aware” evolution of trim(). When trim() was introduced, Unicode wasn’t evolved. Now, the new strip() removes all kinds of whitespaces leading and trailing(check the method Character.isWhitespace(c) to know if a unicode is whitespace or not)
+
+
+3. Local-Variable Syntax for Lambda:
+
+Support for using the local variable syntax (var keyword) in lambda parameters was added in Java 11. Java11 allows 'var' to be used to declare the formal parameters of an implicitly typed lambda expression. 
+
+(var s1, var s2) -> s1 + s2
+
+Limitation of this feature - You must specify the type var on all parameters or none. Things like the following are not possible:
+
+(var s1, s2) -> s1 + s2 //no skipping allowed
+(var s1, String y) -> s1 + y //no mixing allowed
+
+var s1 -> s1 //not allowed. Need parentheses if you use var in lambda.
+
+4. Collection to an Array  - convert Collection to an Array. The java.util.Collection interface contains a new default 'toArray' method which takes an IntFunction argument.
+
+List sampleList = Arrays.asList("Java", "Kotlin");
+String[] sampleArray = sampleList.toArray(String[]::new);
+
+
+5. Reading/Writing Strings to and from the Files
+Java 11 strives to make reading and writing of String convenient. It has introduced the following methods for reading and writing to/from the files:
+--> readString()
+--> writeString()
+
+
+Path path = Files.writeString(Files.createTempFile("test", ".txt"), "This was posted on JD");
+System.out.println(path);
+String s = Files.readString(path);
+System.out.println(s); //This was posted on JD
+
+
+6. The Not Predicate Method: A static not method has been added to the Predicate interface. We can use it to negate an existing predicate, much like the negate method:
+
+List<String> sampleList = Arrays.asList("Java", "\n \n", "Kotlin", " ");
+List withoutBlanks = sampleList.stream()
+  .filter(Predicate.not(String::isBlank))
+  .collect(Collectors.toList());
+  
+While not(isBlank) reads more naturally than isBlank.negate(), the big advantage is that we can also use not with method references, like not(String:isBlank).  
+
+
+7. Optional class - has isEmpty() to check if value is present, alternative to isPresent() 
+
+8. HTTP client: Java 11 standardizes the Http CLient API. The new API supports both HTTP/1.1 and HTTP/2. It is designed to improve the overall performance of sending requests by a client and receiving responses from the server. It also natively supports WebSockets.
+
+
+HttpClient httpClient = HttpClient.newBuilder()
+  .version(HttpClient.Version.HTTP_2)
+  .connectTimeout(Duration.ofSeconds(20))
+  .build();
+HttpRequest httpRequest = HttpRequest.newBuilder()
+  .GET()
+  .uri(URI.create("http://localhost:" + port))
+  .build();
+HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+
+Performance Enhancements:
+
+1. Java class-file format is extended to support a new constant-pool form named CONSTANT_Dynamic. This feature enhances performance and targets language designers and compiler implementors.
+
+2. A new garbage collector called Epsilon is available for use in Java 11 as an experimental feature. Unlike the JVM GC which is responsible for allocating memory and releasing it, Epsilon only allocates memory.
+It allocates memory for the following things- Performance testing, Extremely short lived jobs.
+
+3. Java Flight Recorder (JFR) is now open-source in Open JDK, whereas it used to be a commercial product in Oracle JDK. JFR is a profiling tool that we can use to gather diagnostics and profiling data from a running Java application. To start a 120 seconds JFR recording, we can use the following parameter:
+
+-XX:StartFlightRecording=duration=120s,settings=profile,filename=java-demo-app.jfr 
+

@@ -1,0 +1,340 @@
+Java 8 Concepts:
+==================
+
+1.Functional Interface:
+============================
+Functional Interface is an Interface which allows only one Abstract method within the Interface scope. A functional interface can have any number of default methods. There are some predefined functional interface in Java like Predicate, consumer, supplier etc. @FunctionalInterface annotation is used to ensure an interface can’t have more than one abstract method. The use of this annotation is optional.
+
+There are many functional interfaces already present in java such as Comparable, Runnable.
+
+As we have only one method in Runnable, hence it is considered as functional interface.
+-----------------------------------------------------------------
+        // create anonymous inner class object 
+        new Thread(new Runnable() 
+        { 
+            @Override
+            public void run() 
+            { 
+                System.out.println("New thread created"); 
+            } 
+        }).start(); 
+    
+------------------------------------------------------------
+    // lambda expression to create the object 
+    new Thread(()-> 
+       {System.out.println("New thread created");}).start(); 
+------------------------------------------------------------------
+PREDICATE is single argument function which returns true or false. It improves manageability of code, helps in unit-testing them separately. The Predicate interface has an abstract method 'test' which gives a Boolean value as a result for the specified argument.  Its prototype is-
+------------------------------
+public Predicate
+{
+   public boolean test(T  t);
+ }
+-----------------------------
+Consumer<T> is an in-built functional interface introduced in Java8 in the java.util.function package. The consumer can be used in all contexts where an object needs to be consumed.
+-----------------------------------
+        // Consumer to display a number 
+        Consumer<Integer> display = a -> System.out.println(a); 
+  
+        // Implement display using accept() 
+        display.accept(10); 
+------------------------------------
+Supplier<T> is an in-built functional interface introduced in Java8 in the java.util.function package. The supplier can be used in all contexts where there is no input but an output is expected.
+-----------------------------------------------------------
+        // This function returns a random value. 
+        Supplier<Double> randomValue = () -> Math.random(); 
+  
+        // Print the random value using get() 
+        System.out.println(randomValue.get()); 
+-------------------------------------------------------------
+
+Note:
+1. A functional interface can extends another interface only when it does not have any abstract method.
+2. 
+==========================================================================================================================================================================
+
+2.Lambda Expressions in Java 8:
+===============================
+Lambda expressions basically express instances of functional interfaces. lambda expressions implement the only abstract function and therefore implement functional interfaces. 
+----------------------------------------------------------
+Syntax:
+ lambda operator -> body
+where lambda operator can be:
+Zero parameter: 
+() -> System.out.println("Zero parameter lambda");
+One parameter:–
+(p) -> System.out.println("One parameter: " + p);
+-------------------------------------------------------------
+The return type of the anonymous function is the same as that of the body expression. and the return type of the anonymous function is the same as the type of the value returned within the code block, or void if nothing is returned. 
+
+
+3. Stream In Java:
+=================
+Introduced in Java 8, the Stream API is used to process collections of objects. The features of Java stream are –
+1. A stream is not a data structure instead it takes input from the Collections, Arrays or I/O channels.
+2. Streams don’t change the original data structure, they only provide the result as per the pipelined methods.
+
+Different Operations On Streams-
+Intermediate Operations:
+-------------------------------
+1. map: The map method is used to map the items in the collection to other objects according to the Predicate passed as argument.
+List number = Arrays.asList(2,3,4,5);
+List square = number.stream().map(x->x*x).collect(Collectors.toList());
+
+2. filter: The filter method is used to select elements as per the Predicate passed as argument.
+List names = Arrays.asList("Reflection","Collection","Stream");
+List result = names.stream().filter(s->s.startsWith("S")).collect(Collectors.toList());
+
+3.sorted: The sorted method is used to sort the stream.
+List names = Arrays.asList("Reflection","Collection","Stream");
+List result = names.stream().sorted().collect(Collectors.toList());
+
+Terminal Operations:
+---------------------------
+1. collect: The collect method is used to return the result of the intermediate operations performed on the stream.
+List<Integer> number = Arrays.asList(2,3,4,5,3);
+Set square = number.stream().map(x->x*x).collect(Collectors.toSet());
+
+2. forEach: The forEach method is used to iterate through every element of the stream.
+List<Integer> number = Arrays.asList(2,3,4,5);
+number.stream().map(x->x*x).forEach(y->System.out.println(y));
+
+3. reduce: The reduce method is used to reduce the elements of a stream to a single value.
+The reduce method takes a BinaryOperator as a parameter.
+List<Integer> number = Arrays.asList(2,3,4,5);
+int even = number.stream().filter(x->x%2==0).reduce(0,(ans,i)-> ans+i);
+Here ans variable is assigned 0 as the initial value and i is added to it .
+
+4. count:
+
+long count = employeeList.stream()
+.filter(e->e.getAge()>25)
+.count();
+
+5.  findAny():
+
+List<Employee> employeeList = createEmployeeList();
+        Optional<Employee> e1 = employeeList.stream()
+                  .filter(e->e.getName().equalsIgnoreCase("Mary")).findAny();
+ 
+        if(e1.isPresent())
+            System.out.println(e1.get());
+            
+6. max()
+
+List<Employee> employeeList = createEmployeeList();
+        OptionalInt max = employeeList.stream().
+                          mapToInt(Employee::getAge).max();
+                          
+7. Other Terminal Operator :
+anyMatch, allMatch, noneMatch, findFirst, toArray                                     
+
+Intermediate operations are lazy in nature and do not get executed immediately. Terminal operations are not lazy, they are executed as soon as encountered. Intermediate operation is memorized and is called when terminal operation is called.
+All Intermediate operations return stream as it just transforms stream into another and terminal operation don’t.
+
+Important Points/Observations:
+------------------------------------
+A stream consists of source followed by zero or more intermediate methods combined together (pipelined) and a terminal method to process the objects obtained from the source as per the methods described.
+Stream is used to compute elements as per the pipelined methods without altering the original value of the object.
+
+*/
+Collectors is a final class that extends the Object class.
+*/
+
+
+Collection interface has been extended with stream() and parallelStream() default methods to get the Stream for sequential and parallel execution.
+Stream<Integer> parallelStream = myList.parallelStream();
+Stream<Integer> highNums = parallelStream.filter(p -> p > 90)
+highNums.forEach(p -> System.out.println("High Nums parallel="+p));
+
+Parallel streams divide the provided task into many and run them in different threads, utilizing multiple cores of the computer. On the other hand sequential streams work just like for-loop using a single core.
+
+Notice that parallel processing values are not in order, so parallel processing will be very helpful while working with huge collections.
+
+
+More Example:
+---------------------
+import java.util.stream.Stream;
+
+Integer[]  arr = {2,3,4,5};
+Stream.of(arr).map(x -> x + 5).forEach(y->System.out.println(y));
+
+
+4. Method References in Java 8:
+====================================
+Method reference is a shorthand notation of a lambda expression to call a method. For example:
+If your lambda expression is like this:
+==> str -> System.out.println(str)
+then you can replace it with a method reference like this:                     
+==> System.out::println
+
+Four types of method references
+1. Method reference to an instance method of an object – object::instanceMethod
+2. Method reference to a static method of a class – Class::staticMethod
+3. Method reference to an instance method of an arbitrary object of a particular type – Class::instanceMethod
+4. Method reference to a constructor – Class::new
+
+*/
+BiFunction represents a function that accepts two arguments and produces a result. This is the two-arity specialization of Function.
+
+BiFunction<Integer, Integer, Integer> product = Multiplication::multiply;  
+	int pr = product.apply(11, 5); 
+	int pr = product.apply(11, 5); 
+ 
+*/
+https://beginnersbook.com/2017/10/method-references-in-java-8/
+
+5. Java 8 forEach method and Java – Stream forEachOrdered() Method:
+======================================================================
+In Java 8, we have a newly introduced forEach method to iterate over collections and Streams in Java.
+For sequential streams the order of elements is same as the order in the source, so the output would be same whether you use forEach or forEachOrdered. However when working with parallel streams, you would always want to use the forEachOrdered() method when the order matters to you, as this method guarantees that the order of elements would be same as the source.
+
+link: https://beginnersbook.com/2017/10/java-8-foreach/
+
+6. Java 8 Interface Changes – default method and static method:
+====================================================================
+Prior to java 8, interface in java can only have abstract methods. All the methods of interfaces are public & abstract by default. Java 8 allows the interfaces to have default and static methods. 
+The reason we have default methods in interfaces is to allow the developers to add new methods to the interfaces without affecting the classes that implements these interfaces. Default method are introduced in Java 8 mainly because of backward compatibility. 
+Java interface static method helps us in providing security by not allowing implementation classes to override them. Java interface static methods are good for providing utility methods, for example null check, collection sorting etc. 
+
+7. Java 8 StringJoiner:
+=======================================
+In java 8, a new class StringJoiner is introduced in the java.util package. Using this class we can join more than one strings with the specified delimiter, we can also provide prefix and suffix to the final string while joining multiple strings. 
+
+ex:    StringJoiner mystring = new StringJoiner("-");
+Delimiter => "-"
+
+ex: StringJoiner mystring = new StringJoiner(",", "(", ")");  
+Delimiter => ","
+prefix => "("
+suffix => ")"
+
+
+ex: StringJoiner mergedString = mystring.merge(myanotherstring); 
+
+	/* Merging both the strings  
+	 * The important point to note here is that the output string will be 
+	 * having the delimiter prefix and suffix of the first string (the string
+	 * which is calling the merge method of StringJoiner)
+	 */
+
+8: Java 8 – Arrays Parallel Sort:
+=========================================
+Java 8 introduced a new method parallelSort() in the Arrays class of java.util package. This method is introduced to support the parallel sorting of array elements.
+Algorithm of parallel sorting:
+1. The given array is divided into the sub arrays and the sub arrays are further divided into the their sub arrays, this happens until the sub array reaches a minimum granularity.
+2. The sub arrays are sorted individually by multiple threads. The parallel sort uses Fork/Join Framework for sorting sub arrays parallelly.
+3. The sorted sub arrays are merged.
+
+Advantage of Parallel Sort Over Simple Sort:
+The parallelSort() method uses the concept of multithreading which makes it much faster compared to the normal sort when there are lot of elements.
+
+ex: int numbers[] = {22, 89, 1, 32, 19, 5};
+	//Parallel Sort method for sorting int array
+	Arrays.parallelSort(numbers);
+	
+ex: int numbers[] = {22, 89, 1, 32, 19, 5};
+	/* Specifying the start and end index. The start index is
+	 * 1 here and the end index is 5. which means the the elements
+	 * starting from index 1 till index 5 would be sorted.
+	 */
+	Arrays.parallelSort(numbers, 1, 5);
+	
+9. Java 8 Optional Class:
+===================================
+In Java 8, we have a newly introduced Optional class in java.util package. This class is introduced to avoid NullPointerException. Using this class we can easily check whether a variable has null value or not and by doing this we can avoid the NullPointerException.
+
+ex:   String[] str = new String[10];     
+      Optional<String> isNull = Optional.ofNullable(str[9]);        
+      if(isNull.isPresent()){     
+         //Getting the substring           
+         String str2 = str[9].substring(2, 5);          
+         //Displaying substring           
+         System.out.print("Substring is: "+ str2);       
+      } 
+
+
+=========================================================================================================================================================================
+QA: Collections and Java Stream:
+===================================
+A collection is an in-memory data structure to hold values and before we start using collection, all the values should have been populated. Whereas a java Stream is a data structure that is computed on-demand.
+Java Stream doesn’t store data, it operates on the source data structure.
+
+Java Streams are consumable, so there is no way to create a reference to stream for future usage. Since the data is on-demand, it’s not possible to reuse the same stream multiple times.
+
+there are specific classes for primitive types  – IntStream, LongStream and DoubleStream
+
+Java Stream API operations that returns a new Stream are called intermediate operations.
+Terminal Operations consumes the stream and after that we can’t use stream. You can identify terminal methods from the return type, they will never return a Stream.
+
+
+QA: Difference Between map() And flatMap() In Java Stream
+===================================================
+
+map():  can be used where we have to map the elements of a particular collection to a certain function, and then we need to return the stream which contains the updated results. 
+1. The function passed to map() operation returns a single value for a single input.
+2. Only perform the mapping.
+3. Produce a stream of value.
+
+Example: Multiplying All the elements of the list by 3 and returning the updated list.
+
+flatMap():  can be used where we have to flatten or transform out the string, as we cannot flatten our string using map(). 
+flatMap(mapper) - Transform each element to a stream of its constituent elements and flatten all the streams into a single stream.
+
+map() function produces one output for one input value, whereas flatMap() function produces an arbitrary number of values as output (ie zero or more than zero) for each input value.
+
+1. The function you pass to flatmap() operation returns an arbitrary number of values as the output.
+2. Perform mapping as well as flattening
+3. Produce a stream of stream value.
+
+Example: Getting the 1st Character of all the String present in a List of Strings and returning the result in form of a stream.
+
+
+The Syntax of the map() is represented as:
+
+<R> Stream<R> map(Function<? super T, ? extends R> mapper)
+The Syntax of the flatMap() is represented as:-
+
+<R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper)
+
+Where R is the element type of the new stream. The stream is an interface and T is the type of stream elements and mapper is a stateless function that is applied to each element and the function returns the new stream.
+
+Link:
+https://www.geeksforgeeks.org/difference-between-map-and-flatmap-in-java-stream/
+
+
+QA: What does the peek() method do? When should you use it?
+===================================================
+The peek() method of Stream class allows you to see through a Stream pipeline. You can peek through each step and print meaningful messages on the console. It's generally used for debugging issues
+
+QA: Can you convert an array to Stream? How?
+===========================================
+The Stream class provides a factory method to create a Stream from an array, like Stream .of(T ...) which accepts a variable argument, that means you can also pass an array to it.
+
+String[] lang = {"C", "JAVA", "C++" };
+Stream numbers = Stream.of(languages);
+numbers.forEach(System.out::println);
+
+QA: 
+
+For More About Java8Featues:
+-------------------------------------------------
+https://java2blog.com/java-8-interview-questions/
+
+
+https://www.interviewbit.com/java-8-interview-questions/
+
+Imp: Stream Practice Probs:
+
+https://www.geeksforgeeks.org/tag/java-stream-programs/
+
+
+
+Stream Api Practice
+https://blog.devgenius.io/java-8-coding-and-programming-interview-questions-and-answers-62512c44f062
+
+
+3b7k8ch18u
+
+Rajesh.Kumar@ext-crisil.com
+

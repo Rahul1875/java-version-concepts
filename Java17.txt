@@ -1,0 +1,57 @@
+
+Java 17:
+=================
+Java 17 is a Long-Term Support (LTS) release, bringing major enhancements, performance improvements, and API changes.
+
+
+Language Features
+----------------------
+
+
+1. Sealed Classes (Finalized) — Restrict class inheritance
+
+2. Pattern Matching for switch (Preview) – Cleaner and more expressive switch
+
+3. Records (Finalized from Java 16) – Concise data classes
+
+4. Instanceof Pattern Matching (Finalized from Java 16) – Cleaner type checks.
+
+5. Enhanced Pseudo-Random Number Generators -  provides new interfaces and implementations for Pseudo-Random Number Generators (PRNG).
+
+public IntStream getPseudoInts(String algorithm, int streamSize) {
+    // returns an IntStream with size @streamSize of random numbers generated using the @algorithm
+    // where the lower bound is 0 and the upper is 100 (exclusive)
+    return RandomGeneratorFactory.of(algorithm)
+            .create()
+            .ints(streamSize, 0,100);
+}
+
+
+6.  Text Blocks – Multi-line string literals (""")
+
+Performance & Memory Improvements
+----------------------------------------
+
+1. ZGC (Z Garbage Collector) Enhancements : Lower latency, better scalability.
+Lower latency:
+Java 17 reduces GC pause times, ensuring that GC does not exceed 1 millisecond(earlier 2–10ms), even with larger heaps (up to 16TB compare to 4TB and more efficient for large-scale applications).This is ideal for low-latency applications like trading systems, real-time analytics, and cloud-based services.
+
+Better scalability:
+Thread Stack Processing fully concurrent(Earlier it was partial).
+
+
+When to Use ZGC?
+
+-Low-latency applications (Trading, Gaming, AI, Real-time Analytics)
+-Microservices running in cloud environments
+-Large-memory applications (Big Data, Machine Learning)
+
+2. Always-Strict Floating Point Semantics — Ensures predictable floating-point operations   
+Before Java 17, floating-point calculations in Java were sometimes affected by platform-specific optimizations, leading to: Inconsistent results across different JVM implementations.
+
+Java 17 enforces strict floating-point semantics globally, The strictfp keyword is no longer needed because all floating-point calculations now follow strict IEEE 754 rules.
+
+
+Links:
+
+https://medium.com/@brijesh.sriv.misc/complete-list-of-features-in-java-17-lts-5f4f1fa5fe67

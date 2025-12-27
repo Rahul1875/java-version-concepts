@@ -1,0 +1,46 @@
+Java 21:
+=================
+
+Q: Thread vs Virtual Thread
+
+🔹What is a Thread (Platform Thread): A Thread (also called Platform Thread) is a real OS-level thread.
+Key points:
+Java Thread ≈ 1 OS Thread --> Created using new Thread() --> Blocking call = thread is blocked
+
+Thread t = new Thread(() -> {
+    System.out.println("Hello");
+});
+t.start();
+
+🔹 What is a Virtual Thread: A Virtual Thread is a lightweight thread managed by the JVM, not directly by the OS. Introduced with Project Loom (Java 21 LTS).
+Key points
+Cheap to create, possible to create Thousands to millions --> Blocking calls are non-blocking internally --> Best for I/O-heavy apps (APIs, microservices)
+
+Thread vt = Thread.ofVirtual().start(() -> {
+    System.out.println("Hello from Virtual Thread");
+});
+
+How Virtual Threads Work:
+Virtual threads decouple the concept of a thread from the underlying operating system thread. While traditional threads map directly to OS threads, virtual threads are managed by the Java runtime. This allows the Java Virtual Machine (JVM) to handle the scheduling and execution of virtual threads more efficiently.
+
+| Feature        | Platform Thread  | Virtual Thread   |
+| -------------- | ---------------- | ---------------- |
+| Managed by     | OS               | JVM              |
+| Creation cost  | High             | Very low         |
+| Memory         | ~1MB stack       | Few KB           |
+| Blocking I/O   | Blocks OS thread | JVM parks thread |
+| Scalability    | ❌ Limited        | ✅ Massive        |
+| CPU-bound work | ✅ Good           | ❌ Not ideal      |
+| I/O-bound work | ❌ Poor           | ✅ Excellent      |
+
+🔹 Executor Example (Recommended Way):
+
+ExecutorService es = Executors.newVirtualThreadPerTaskExecutor();
+
+✅ Use Virtual Threads when: REST APIs --> Database calls -> External service calls --> Microservices --> High concurrency
+👉 90% backend APIs should use Virtual Threads
+
+Q: Are virtual threads faster than threads?
+❌ No
+✅ They are more scalable, not faster per task.
+
